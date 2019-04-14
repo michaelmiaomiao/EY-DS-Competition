@@ -14,13 +14,33 @@ y_exit_ix = 10
 
 
 class FillPathTransformer(TransformerMixin, BaseEstimator):
+    '''
+        Fill the disconnected paths for raw train or test dataframe.
+        When it is applied to the train dataframe, the test dataframe
+        MUST be applied as well and vise versa, otherwise the prediction
+        result will fail.
+    '''
+
     def fit(self, X):
         return self
 
     def transform(self, X):
+        '''
+            Parameter:
+                X is raw train or test dataframe.
+            Return:
+                The dataframe that all the paths are connected and inserted.
+        '''
         return pd.concat([self.__connect_one_device(i) for i in X.groupby("hash")], axis=0).reset_index(drop=True)
 
     def __connect_one_device(self, group):
+        '''
+            Connect all paths of a device.
+            Parameter:
+                group: a pandas Groupby object, group by "hash"
+            Return:
+                A dataframe that all the paths of this device are connected and inserted.
+        '''
         hash_, df = group[0], group[1]
 
         def add_p5_suffix(x):
