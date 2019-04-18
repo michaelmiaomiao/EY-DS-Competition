@@ -111,5 +111,7 @@ OriginalFile/*
 
 # Temp csv file
 temp*.csv
+Tmp/*
 
-
+# VS Code
+.vscode/*
