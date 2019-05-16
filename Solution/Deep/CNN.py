@@ -1,6 +1,5 @@
 import sys
 sys.path.append(".")
-
 import numpy as np
 import pandas as pd
 from keras import layers, models, optimizers
@@ -9,13 +8,9 @@ from Solution.deeputil.Matrixfy import MatrixfyTransformer
 from Solution.util.Labelling import Labeller
 from Solution.util.PathFilling import FillPathTransformer
 from Solution.util.BaseUtil import Raw_DF_Reader, time_delta
-from Solution.util.Submition import Submitter
+from Solution.util.Submission import Submitter
 from Solution.deeputil.MatrixProvider import MProvider
-
-def naive_value(timestamp):
-    start = pd.Timestamp("1900-01-01 00:00:00")
-    end = pd.Timestamp("1900-01-01 23:59:59")
-    return time_delta(timestamp, start) / time_delta(start, end)
+from Solution.deeputil.ValueFunc import naive_value
 
 
 class CNNCoordinator(object):
@@ -84,6 +79,9 @@ class CNNCoordinator(object):
 
 
 def init_model(resolution):
+    '''
+        Initialize the CNN model.
+    '''
     model = models.Sequential()
     model.add(layers.Conv2D(32, (3, 3), activation="relu",
                             input_shape=(*resolution, 1)))
@@ -105,6 +103,9 @@ def init_model(resolution):
 
 
 def main():
+    '''
+        Perform the main task.
+    '''
     coor = CNNCoordinator()
     train_maps = coor.train_maps
     test_maps = coor.test_maps

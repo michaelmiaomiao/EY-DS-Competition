@@ -1,15 +1,19 @@
-import sys
-sys.path.append(".")
-from Solution.util.PathFilling import FillPathTransformer
+'''
+    Provide the feature DataFrame and handle the local saving / loading.
+'''
+
+import os
+from collections import Iterable
+
+import pandas as pd
+from sklearn.base import BaseEstimator, TransformerMixin
+
+from Solution.util.BaseUtil import Raw_DF_Reader
+from Solution.util.Labelling import Labeller
 from Solution.util.NaiveFeature import (CoordinateInfoExtractor,
                                         DistanceInfoExtractor,
                                         PathInfoExtractor, TimeInfoExtractor)
-from Solution.util.Labelling import Labeller
-from Solution.util.BaseUtil import Raw_DF_Reader
-from sklearn.base import BaseEstimator, TransformerMixin
-import pandas as pd
-from collections import Iterable
-import os
+from Solution.util.PathFilling import FillPathTransformer
 
 
 class DFProvider(object):
@@ -24,6 +28,7 @@ class DFProvider(object):
         Parameters:
             - set_: ["train"/"test"], get train set or test set.
             - features: str "all" or list containing the following options:
+                - "time
                 - "coordinate"
                 - "distance"
                 - "path"
@@ -32,7 +37,9 @@ class DFProvider(object):
             - overwrite: boolean, whether or not ignore the existed csv file and recalculate the dataframe.
 
         ---
+
         Inserting New Extractors by modifying the code:
+
         1. add the extractor class to ALL_EXTRACTORS constant dictionary.
         2. (optional) pass the parameters to the extractors to the __initialize_extractors() function.
     '''
@@ -43,7 +50,15 @@ class DFProvider(object):
         "distance": DistanceInfoExtractor,
         "path": PathInfoExtractor
     }
+    '''
+        Dictionary of all the registered feature extractors.
+    '''
+
     ALL_FEATURES = ALL_EXTRACTORS.keys()
+    '''
+        Name of all the registered feature extractors.
+        `ALL_FEATURES = ALL_EXTRACTORS.keys()`
+    '''
 
     def __init__(self, set_, features="all", path_filled=True, overwrite=False):
 
@@ -124,7 +139,7 @@ class DFProvider(object):
         else:
             print(
                 "No existed required file" if not self.overwrite else "Forced overwrite"+", recalculating.")
-            self.df = self.__provide_df().apply(pd.to_numeric, errors="coerce")
+            self.df = self.__provide_df().apply(pd.to_numeric, errors="coerce").reset_index()
             self.__write_df()
             print("Newly calculated dataframe retrieved and saved.")
 
@@ -133,19 +148,4 @@ class DFProvider(object):
 
     def __write_df(self):
         with open(self.__filepath, "w", encoding="utf-8") as f:
-            self.df.to_csv(f, line_terminator="\n")
-
-
-'''
-    The following code can calculate and save the most useful csv files.
-'''
-if __name__ == "__main__":
-    import threading
-    for i in ["test"]:
-        try:
-            t = threading.Thread(
-                target=DFProvider(i, path_filled=True).get_df
-            )
-            t.start()
-        except Exception as e:
-            print(e)
+            self.df.to_csv(f, line_terminator="\n", index=False)

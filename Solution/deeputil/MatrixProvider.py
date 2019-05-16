@@ -6,16 +6,12 @@ from Solution.util.BaseUtil import Raw_DF_Reader, time_delta
 from scipy import sparse
 from Solution.deeputil.Matrixfy import MatrixfyTransformer
 from Solution.util.PathFilling import FillPathTransformer
+from Solution.deeputil.ValueFunc import naive_value
 
 
 X_RANGE = 36100.91086425679
 Y_RANGE = 340258.3224131949
 
-
-def naive_value(timestamp):
-    start = pd.Timestamp("1900-01-01 00:00:00")
-    end = pd.Timestamp("1900-01-01 23:59:59")
-    return time_delta(timestamp, start) / time_delta(start, end)
 
 
 class MProvider(object):
@@ -35,6 +31,8 @@ class MProvider(object):
             - pixel
             - fill_path
             - value_func
+            - big_matrix: a big matrix with all the devices' matrix map
+            - df_index: the index of the maps in big_matrix
     '''
 
     def __init__(self, set_, pixel=1000, fill_path=True, value_func=naive_value, overwrite=False):
@@ -126,6 +124,9 @@ class MProvider(object):
         return df
 
     def __provide_matrix_and_index(self):
+        '''
+            To get big_matrix and df_index from raw data
+        '''
         r = Raw_DF_Reader()
         self.train = r.train
         self.test = r.test

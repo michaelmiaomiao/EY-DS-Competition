@@ -1,3 +1,7 @@
+'''
+    Feature extractors for features used in machine learning.
+'''
+
 import datetime
 
 import numpy as np
@@ -11,9 +15,10 @@ from Solution.util.BaseUtil import (Raw_DF_Reader, distance_between,
 class DistanceInfoExtractor(TransformerMixin, BaseEstimator):
     '''
         Features extracted:
-            - The max, min, average level of the distance of all the points recorded by a device.
-            - The difference between the distance of the entry of the first path and the exit of the last one.
-            - The difference between the distance of the entry and the exit of the last path.
+
+            - The max, min, average level of the distance to the border of the central area of all the points recorded by a device.
+            - The difference between the distance to the central area of the entry of the first path and the exit of the last known path.
+            - The difference between the distance to the central area of the entry and the exit of the last known path.
 
         Parameters:
             path_filled: whether the input dataframe is processed by PathFilling.FillPathTransformer
@@ -116,6 +121,7 @@ class DistanceInfoExtractor(TransformerMixin, BaseEstimator):
 class PathInfoExtractor(TransformerMixin, BaseEstimator):
     '''
         Features extracted:
+
             - The min, max, average level of the length of all the paths recorded by a device
             - The min, max, average level of the average velocity of all the paths recorded by a device
     '''
@@ -173,7 +179,8 @@ class PathInfoExtractor(TransformerMixin, BaseEstimator):
 class CoordinateInfoExtractor(TransformerMixin, BaseEstimator):
     '''
         Features Extracted:
-            - The coordinate of the start point of the last path (the unknown, to be predicted path).
+
+            - The coordinate of the start point of the unknown path
     '''
 
     def __init__(self, *args, **kwargs):
@@ -186,10 +193,10 @@ class CoordinateInfoExtractor(TransformerMixin, BaseEstimator):
         '''
             Parameters:
                 X: Dataframe containing column:
-                "hash", "x_entry", "y_entry"
+                    "hash", "x_entry", "y_entry"
 
             Returns:
-                A Dataframe containing numbers of "hash" rows, two columns.
+                A DataFrame containing numbers of "hash" rows, two columns.
                 The index is the hash value of the device.
                 Each column is a feature, as described by the class docstring.
         '''
@@ -203,6 +210,14 @@ class CoordinateInfoExtractor(TransformerMixin, BaseEstimator):
 
 
 class TimeInfoExtractor(TransformerMixin, BaseEstimator):
+    '''
+        Features Extracted:
+        
+            - The difference between **3 p.m.** and the starting / ending time point of the unknown path. (in seconds)
+                Mind that it is not reflected in the name of the column.
+            - The difference between the starting and ending time point of the unknown path. (in seconds)
+    '''
+
     def __init__(self, *args, **kwargs):
         super().__init__()
 
@@ -210,6 +225,16 @@ class TimeInfoExtractor(TransformerMixin, BaseEstimator):
         return self
 
     def transform(self, X):
+        '''
+            Parameters:
+                X: Dataframe containing column:
+                    "hash", "time_entry", "time_exit"
+
+            Returns:
+                A DataFrame containing numbers of "hash" rows, three columns.
+                The index is the hash value of the device.
+                Each column is a feature, as described by the class docstring.
+        '''
         groups = X.groupby("hash")
         time_info = groups.apply(self.__time_info_in_group)
 
