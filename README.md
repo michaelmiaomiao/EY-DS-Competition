@@ -22,6 +22,7 @@ Solution for 2019 EY Nextwave Data Science Challenge by Vopaaz and Xiaochr.
 			- [Model Training and Selection](#model-training-and-selection)
 	- [Module Documentation](#module-documentation)
 	- [Approach Explored but not Used](#approach-explored-but-not-used)
+- [Final Presentation](#final-presentation)
 
 <!-- /code_chunk_output -->
 
@@ -168,3 +169,7 @@ According to our analysis, the reason may be that CNN is designed to deal with r
 
 The code implementing this approach are in `Solution/Deep` and `Solution/deeputil`.
 
+
+# Final Presentation
+
+Our presentation slides can be found at https://github.com/Vopaaz/EY-DS-Competition-Slides.
